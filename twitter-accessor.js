@@ -5,27 +5,29 @@ const client = new Twitter({
   bearer_token: privateVars.bearer_token,
 });
 
-const allTweets = []; // Start with empty array of tweets.
-// When no more tweets are left to pull from API,
-// return populated array, allTweets, to module caller in index.js
+/* Equivalent to:
+(urlParams) => new Promise((resolve) => resolve(
+  client.get('tweets/search/recent', urlParams).then((result) => result)));
+and (urlParams) =>
+  Promise.resolve(client.get('tweets/search/recent', urlParams).then((result) => result));
+*/
+const queryTwitter = (urlParams) => client.get('tweets/search/recent', urlParams).then((result) => result);
 
-function getTweets(query, nextToken) {
-  const urlParams = { query, max_results: 10 };
-  if (nextToken) {
-    urlParams.next_token = nextToken;
+async function getTweets(query, nextToken) {
+  if (typeof nextToken === 'undefined') { // No more results left in 'pagination'
+    return [];
   }
-  client.get('tweets/search/recent', urlParams).then((result) => {
-    allTweets.push(...result.data);
-    if (!result.meta.next_token) {
-      // No more results left in 'pagination'
-      return;
-    }
-    // Get next 'page' of results
-    getTweets(query, result.meta.next_token);
-  });
+
+  // Set params and execute request
+  const requestParams = { query, max_results: 10 };
+  if (nextToken !== null) {
+    requestParams.next_token = nextToken;
+  }
+  const resp = await queryTwitter(requestParams);
+
+  // Combine response data with subsequent pagination request results
+  return resp.data
+    .concat(await (getTweets(query, resp.meta.next_token)));
 }
 
-module.exports.getAggregatedTweets = (tweetQuery) => {
-  getTweets(tweetQuery);
-  return allTweets;
-};
+module.exports.getAggregatedTweets = (tweetQuery) => getTweets(tweetQuery, null);
