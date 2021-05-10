@@ -11,6 +11,7 @@ const client = new Twitter({
 and (urlParams) =>
   Promise.resolve(client.get('tweets/search/recent', urlParams).then((result) => result));
 */
+// TODO: use generator function instead of this
 const queryTwitter = (urlParams) => client.get('tweets/search/recent', urlParams).then((result) => result);
 
 async function getTweets(query, nextToken) {
@@ -19,7 +20,7 @@ async function getTweets(query, nextToken) {
   }
 
   // Set params and execute request
-  const requestParams = { query, max_results: 10 };
+  const requestParams = { query, max_results: 100 };
   if (nextToken !== null) {
     requestParams.next_token = nextToken;
   }
