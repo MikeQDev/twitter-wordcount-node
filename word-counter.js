@@ -1,3 +1,4 @@
+// TODO: attempt 2-word count? IE: 'the fox' as one entry instead of two
 module.exports = (tweetData) => {
   // Perform word-count
   const wordCounts = {};
