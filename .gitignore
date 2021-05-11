@@ -1,2 +1,3 @@
 node_modules
 private-vars.js
+*-*-output.json
