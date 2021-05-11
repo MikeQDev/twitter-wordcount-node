@@ -3,7 +3,7 @@ module.exports = (tweetData) => {
   // Perform word-count
   const wordCounts = {};
   tweetData.forEach((tweet) => {
-    tweet.text.split(/[ ,-]+/).forEach((word) => { wordCounts[word] = word in wordCounts ? wordCounts[word] + 1 : 1; });
+    tweet.text.split(/[ ,.?]+/).forEach((word) => { wordCounts[word] = word in wordCounts ? wordCounts[word] + 1 : 1; });
   });
 
   // Sort
